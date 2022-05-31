@@ -1,17 +1,20 @@
 using System;
+using System.Globalization;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
 {
     /// <summary>
     /// Script managing player movement
+    /// This player controller work with no friction, because the script handle it itself. 
     /// </summary>
 
     [Header("Components")] 
     public Camera cameraPlayer;
     public Transform trPlayer;
     public Rigidbody rbPlayer;
-
+    public CapsuleCollider cc;
 
     [Header("Values for movement")] 
     public AnimationCurve acceleration; // Curve for the acceleration and the break
@@ -20,7 +23,12 @@ public class PlayerController : MonoBehaviour
     [Header("Rotation")]
     public float dampingTime;
 
-    [Header("Commandes")] 
+    [Header("Slopes movement")] 
+    public AnimationCurve slopeCurvature;
+    public LayerMask groundCheck;
+    public float tresholdOfSlide; 
+    
+    [Header("Commands")] 
     public float deadZone = 0.2f;
     
     // private section
@@ -29,27 +37,29 @@ public class PlayerController : MonoBehaviour
     private float horizontalAxe;
     private float acc;
 
+    private float time;
+    private bool switchState = false;
+    private float oldDampingTime;
+    private float currentAngle;
+    
     private Quaternion lookDr;
     private Vector3 lastPosition;
-    private float speed;
-    private float time;
-    private bool startAcc = false;
-    private bool startBrk = false;
-    private float oldDampingTime;
-    private bool pressed = false;
     private Vector3 oldDir;
+    private Vector3 slopeDirection;
+    
+    
     void Start()
     {
-        speed = 0;
         time = 0;
         acc = 0f;
         oldDampingTime = dampingTime;
+        oldDir = trPlayer.transform.forward;
     }
     // Update is called once per frame
     void Update()
     {
-        verticalAxe = Input.GetAxisRaw("Vertical");
-        horizontalAxe = Input.GetAxisRaw("Horizontal");
+        verticalAxe = Input.GetAxis("Vertical");
+        horizontalAxe = Input.GetAxis("Horizontal");
 
         if (horizontalAxe <= deadZone && horizontalAxe >= -deadZone)
         {
@@ -63,30 +73,31 @@ public class PlayerController : MonoBehaviour
         
         dragEffect();
 
+        
         dampingTime = oldDampingTime;
         
 
         
     }
 
+    private bool isMoving()
+    {
+        return horizontalAxe > 0 || verticalAxe > 0 || horizontalAxe < 0 || verticalAxe < 0;
+    }
+
     
     private void dragEffect()
     {
-
-        var velocity = rbPlayer.velocity;
-        Vector2 velo = Vector2.ClampMagnitude(new Vector2(velocity.x,velocity.z),acc);
-        rbPlayer.velocity = new Vector3(velo.x, rbPlayer.velocity.y, velo.y);
-        speed = new Vector3(velocity.x, 0, velocity.z).magnitude;
         
-    
-        if (horizontalAxe > 0 || verticalAxe > 0 || horizontalAxe < 0 || verticalAxe < 0 )
+        if (isMoving())
         {
    
-            if (!startAcc)
+            if (!switchState)
             {
                 time = 0;
-                startBrk = false;
-                startAcc = true;
+                rbPlayer.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ |
+                                       RigidbodyConstraints.FreezeRotationY;
+                switchState = true;
             }
             
             time += Time.deltaTime;
@@ -95,14 +106,18 @@ public class PlayerController : MonoBehaviour
           
             acc = acceleration.Evaluate(time);
         }
-        else if(speed > 0f)
+        else 
         {
      
-            if (!startBrk)
+            if (switchState)
             {
                 time = 0;
-                startBrk = true;
-                startAcc = false;
+                switchState = false;
+            }
+            
+            if(time >= drag.keys[^1].time && currentAngle <= tresholdOfSlide)
+            {
+                rbPlayer.constraints = RigidbodyConstraints.FreezeAll;
             }
             
             time += Time.deltaTime;
@@ -115,8 +130,12 @@ public class PlayerController : MonoBehaviour
     }
     public void MovePlayer()
     {
-
-      
+        /*
+         Show velocity speed 
+         
+        Vector2 velo = new Vector2(rbPlayer.velocity.x, rbPlayer.velocity.z);
+        Debug.Log(velo.magnitude);
+       */ 
         
         var transform1 = cameraPlayer.transform;
         var right = transform1.right ;
@@ -136,26 +155,38 @@ public class PlayerController : MonoBehaviour
         lookDr = Quaternion.LookRotation(dir);
 
         var d = new Vector3(dir.x, 0, dir.z);
-        rbPlayer.velocity = new Vector3(d.x * acc,rbPlayer.velocity.y,d.z *acc);
+        
+       float y1 = slopeDirection.y >= 0 ? 0 : 1;
+       var slopeCompensation = slopeCurvature.Evaluate(currentAngle);
+       
+       Debug.Log(slopeCompensation +" Angle "+ currentAngle);
+       
+        rbPlayer.velocity = new Vector3(d.x * acc *slopeCompensation ,rbPlayer.velocity.y + slopeDirection.y * y1 ,d.z *acc * slopeCompensation);
 
     }
 
     
     private void FixedUpdate()
     {
-  
-
-        
+       
         MovePlayer();
-     
+        currentAngle = 0;
+      
+
+        if (Physics.SphereCast(trPlayer.position,cc.radius,-trPlayer.transform.up, out var hit,3f,groundCheck))
+        {
+            slopeDirection = Vector3.Cross(trPlayer.right,hit.normal );
+
+            currentAngle = Vector3.SignedAngle(slopeDirection,trPlayer.forward,trPlayer.right );
+            
+            //Debug.Log(currentAngle);
+            
+            
+            Debug.DrawRay(trPlayer.position+trPlayer.forward*cc.radius, slopeDirection * 150f, Color.yellow);
+            Debug.DrawRay(trPlayer.position+trPlayer.forward*cc.radius, trPlayer.forward * 150f, Color.red);
         
-        
-        
+        }
+         
         trPlayer.localRotation = Quaternion.Slerp(trPlayer.transform.localRotation,lookDr, Time.deltaTime *dampingTime);
-        
-  
-
-
-
     }
 }
