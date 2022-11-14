@@ -1,0 +1,57 @@
+{
+    "name": "PlayerAction",
+    "maps": [
+        {
+            "name": "PlayerController",
+            "id": "02e1ca05-4b36-4224-9caf-1e807cbdd82f",
+            "actions": [
+                {
+                    "name": "Forward",
+                    "type": "Value",
+                    "id": "39a6e5a6-72cd-4da9-bde9-791625754d06",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "99a62c53-67f2-48cd-a50f-3b2ce66c1ed3",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PlayerKeyboard",
+                    "action": "Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a87c4795-6d6a-4607-bfcd-62ae3c93a1f8",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PlayerKeyboard",
+                    "action": "Forward",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "PlayerKeyboard",
+            "bindingGroup": "PlayerKeyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
