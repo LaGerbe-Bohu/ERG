@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,30 +29,30 @@ public class CharacterView : MonoBehaviour
     void Start()
     {
         // lock the mouse
-        
+        LockCursor();
         rotation = new Vector2(0,0);
+        
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
    
-    }       
+    }
     
     void Update()
     {
-        LockCursor();
+     
         fpsView();
     }
 
     void LockCursor()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        
     }
     
     void fpsView()
     {
         // this is for prevent mouse shift in begin of play mode
         if (Time.time < 0.5) return;
-        
-    
-        Cursor.visible = true;
+
         rotation.x += Input.GetAxisRaw(xAxis) *  mouseSensitivy * Time.deltaTime ;
         rotation.y += Input.GetAxisRaw(yAxis) *  -mouseSensitivy * Time.deltaTime;
         rotation.y =  Mathf.Clamp(rotation.y, -maxRotation, maxRotation);
