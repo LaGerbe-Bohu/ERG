@@ -28,17 +28,23 @@ public class CharacterView : MonoBehaviour
     void Start()
     {
         // lock the mouse
-        Cursor.lockState = CursorLockMode.Locked;
+        
         rotation = new Vector2(0,0);
    
     }       
     
     void Update()
     {
-      
+        LockCursor();
         fpsView();
     }
 
+    void LockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+    
     void fpsView()
     {
         // this is for prevent mouse shift in begin of play mode
@@ -55,8 +61,8 @@ public class CharacterView : MonoBehaviour
         Quaternion yQuat = Quaternion.Euler(rotation.y,0.0f, 0.0f);
         
         
-        playerBody.transform.localRotation = xQuat;
-        cameraPlayer.transform.localRotation = yQuat;
+        cameraPlayer.transform.localRotation = xQuat*yQuat;
+
     }
     
 }

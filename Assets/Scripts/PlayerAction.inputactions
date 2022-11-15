@@ -6,7 +6,7 @@
             "id": "02e1ca05-4b36-4224-9caf-1e807cbdd82f",
             "actions": [
                 {
-                    "name": "Forward",
+                    "name": "Deplacement",
                     "type": "Value",
                     "id": "39a6e5a6-72cd-4da9-bde9-791625754d06",
                     "expectedControlType": "Vector2",
@@ -17,26 +17,59 @@
             ],
             "bindings": [
                 {
-                    "name": "",
-                    "id": "99a62c53-67f2-48cd-a50f-3b2ce66c1ed3",
-                    "path": "<Keyboard>/w",
+                    "name": "Movement",
+                    "id": "8416c665-7c59-4af8-9b4e-f59ba76d2962",
+                    "path": "2DVector(mode=1)",
                     "interactions": "",
                     "processors": "",
-                    "groups": "PlayerKeyboard",
-                    "action": "Forward",
-                    "isComposite": false,
+                    "groups": "",
+                    "action": "Deplacement",
+                    "isComposite": true,
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "a87c4795-6d6a-4607-bfcd-62ae3c93a1f8",
+                    "name": "up",
+                    "id": "b13f91b6-0d27-43a7-868d-c4d70263ee44",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Deplacement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "f68f8d2a-f61e-4efd-b4fc-38969c912bb6",
                     "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
-                    "groups": "PlayerKeyboard",
-                    "action": "Forward",
+                    "groups": "",
+                    "action": "Deplacement",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "79872c94-cf5f-48af-aefd-21af3d443482",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Deplacement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "9175c5c2-c8f4-49a1-abc1-ebcbcfa66f69",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Deplacement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
