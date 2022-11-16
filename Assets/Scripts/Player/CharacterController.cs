@@ -29,6 +29,7 @@ public class CharacterController : MonoBehaviour
     private bool _isGrounded;
     private Vector3 _normalSurface;
     private Vector3 _tangentSurface;
+    
     void Update()
     {
         // Inputs
@@ -51,24 +52,34 @@ public class CharacterController : MonoBehaviour
         // move character
         var biaisTransform = transformBias.transform;
         
-        Vector3 forward = biaisTransform.forward;
+        Vector3 forward = _tangentSurface;
         Vector3 right =  biaisTransform.right;
+        
+        
+        
+        // Movement
+        
+        Debug.Log(ProjectAngle(_tangentSurface,Vector3.forward,transformBias.right));
         
         rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Acceleration);
         rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Acceleration);
         
-        rigidBody.AddForce(-Vector3.up*gravityScale,ForceMode.Acceleration);
+        // Gravity accentiation
+        rigidBody.AddForce(-_normalSurface*gravityScale,ForceMode.Acceleration);
 
 
+        // Normalise speed
         var velocity = rigidBody.velocity;
         float tmpY = velocity.y;
         
-        // normalise velocity speed
         Vector3 tmpVelo;
         tmpVelo = Vector3.ClampMagnitude(velocity, maxSpeed);
         tmpVelo = new Vector3(tmpVelo.x, tmpY, tmpVelo.z);
         rigidBody.velocity = tmpVelo;
 
+        
+        
+        
     }
 
 
@@ -97,12 +108,15 @@ public class CharacterController : MonoBehaviour
 
         Vector3 postiion = rigidBody.transform.position + Vector3.up*0.25f;
 
-        if (Physics.SphereCast(postiion, 0.5f, -rigidBody.transform.up, out hit, 1f))
+        if (Physics.SphereCast(postiion, 0.8f, -rigidBody.transform.up, out hit, 1f))
         {
             _normalSurface = hit.normal;
             _tangentSurface = Vector3.Cross( transformBias.transform.right,hit.normal);
             _isGrounded =  true;
-            
+
+            _normalSurface = _normalSurface.normalized;
+            _tangentSurface = _tangentSurface.normalized;
+
         }
 
         _isGrounded = false;
@@ -126,4 +140,24 @@ public class CharacterController : MonoBehaviour
         Gizmos.DrawRay(position,_tangentSurface*10f);
         
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // useful fonction
+    public float ProjectAngle(Vector3 A, Vector3 B, Vector3 normal)
+    {
+        Vector3 a = Vector3.ProjectOnPlane(A, normal);
+        Vector3 b = Vector3.ProjectOnPlane(B, normal);
+
+        return Vector3.SignedAngle(a, b,Vector3.right);
+    }
+    
 }
