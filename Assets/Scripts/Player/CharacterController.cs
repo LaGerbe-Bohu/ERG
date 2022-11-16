@@ -52,20 +52,24 @@ public class CharacterController : MonoBehaviour
         // move character
         var biaisTransform = transformBias.transform;
         
-        Vector3 forward = _tangentSurface;
+        Vector3 forward = biaisTransform.forward;
         Vector3 right =  biaisTransform.right;
         
         
         
         // Movement
         
-        Debug.Log(ProjectAngle(_tangentSurface,Vector3.forward,transformBias.right));
-        
+       float Angle = ProjectAngle(_tangentSurface,Vector3.forward,transformBias.right);
+       Angle = 180 - Angle;
+       Debug.Log(Angle);
+       
         rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Acceleration);
         rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Acceleration);
+
+        rigidBody.velocity += (biaisTransform.forward*Angle) * _direction.y * Time.deltaTime;
         
         // Gravity accentiation
-        rigidBody.AddForce(-_normalSurface*gravityScale,ForceMode.Acceleration);
+        rigidBody.AddForce(-Vector3.up,ForceMode.Acceleration);
 
 
         // Normalise speed
@@ -106,7 +110,7 @@ public class CharacterController : MonoBehaviour
     {
         RaycastHit hit;
 
-        Vector3 postiion = rigidBody.transform.position + Vector3.up*0.25f;
+        Vector3 postiion = rigidBody.transform.position + Vector3.up*0.35f;
 
         if (Physics.SphereCast(postiion, 0.8f, -rigidBody.transform.up, out hit, 1f))
         {
@@ -127,11 +131,11 @@ public class CharacterController : MonoBehaviour
         
         Gizmos.color = Color.blue;
         var transform1 = rigidBody.transform;
-        Gizmos.DrawRay(transform1.position + Vector3.up*0.25f, -transform1.up*1f);
+        Gizmos.DrawRay(transform1.position + Vector3.up*0.35f, -transform1.up*1f);
         
         Gizmos.color = Color.red;
         var transform2 = rigidBody.transform;
-        Gizmos.DrawWireSphere((transform2.position + Vector3.up*.25f) -transform2.up*1f ,.5f);
+        Gizmos.DrawWireSphere((transform2.position + Vector3.up*.35f) -transform2.up*1f ,.8f);
         
         Gizmos.color = Color.green;
 
