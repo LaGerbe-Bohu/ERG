@@ -27,6 +27,8 @@ public class CharacterController : MonoBehaviour
     private Vector2 _direction;
     private bool _jump;
     private bool _isGrounded;
+    private Vector3 _normalSurface;
+    private Vector3 _tangentSurface;
     void Update()
     {
         // Inputs
@@ -40,6 +42,7 @@ public class CharacterController : MonoBehaviour
     {
         MoveCharacter();
         JumpCharacter();
+        IsGrounded();
     }
     
     
@@ -82,17 +85,13 @@ public class CharacterController : MonoBehaviour
     
     private void JumpCharacter()
     {
-        if (!this._jump) return;
+        if (!_jump || !_isGrounded) return;
 
-        bool grounded = IsGrounded();
-
-        if (!grounded) return;
         
         rigidBody.AddForce(rigidBody.transform.up*jumpForce,ForceMode.Acceleration);
-        
     }
     
-    bool IsGrounded()
+    void IsGrounded()
     {
         RaycastHit hit;
 
@@ -100,19 +99,31 @@ public class CharacterController : MonoBehaviour
 
         if (Physics.SphereCast(postiion, 0.5f, -rigidBody.transform.up, out hit, 1f))
         {
-            return true;
+            _normalSurface = hit.normal;
+            _tangentSurface = Vector3.Cross( transformBias.transform.right,hit.normal);
+            _isGrounded =  true;
+            
         }
 
-        return false;
+        _isGrounded = false;
     }
 
     private void OnDrawGizmos()
     {
         
         Gizmos.color = Color.blue;
-        Gizmos.DrawRay(rigidBody.transform.position + Vector3.up*0.25f, -rigidBody.transform.up*1f);
+        var transform1 = rigidBody.transform;
+        Gizmos.DrawRay(transform1.position + Vector3.up*0.25f, -transform1.up*1f);
         
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere((rigidBody.transform.position + Vector3.up*.25f) -rigidBody.transform.up*1f ,.5f);
+        var transform2 = rigidBody.transform;
+        Gizmos.DrawWireSphere((transform2.position + Vector3.up*.25f) -transform2.up*1f ,.5f);
+        
+        Gizmos.color = Color.green;
+
+        var position = this.transform.position;
+        Gizmos.DrawRay(position,_normalSurface*10f);
+        Gizmos.DrawRay(position,_tangentSurface*10f);
+        
     }
 }
