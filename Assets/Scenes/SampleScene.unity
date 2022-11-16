@@ -189,7 +189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPlayer: {fileID: 963194227}
   playerBody: {fileID: 246610162}
-  mouseSensitivy: 150
+  mouseSensitivy: 250
   maxRotation: 85
 --- !u!54 &246610164
 Rigidbody:
@@ -225,7 +225,9 @@ MonoBehaviour:
   transformBias: {fileID: 377638500}
   acceleration: 60
   maxSpeed: 10
-  GravityScale: 3
+  jumpForce: 50
+  airControl: 0
+  gravityScale: 3
 --- !u!114 &246610166
 MonoBehaviour:
   m_ObjectHideFlags: 0
