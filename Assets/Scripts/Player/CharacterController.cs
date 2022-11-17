@@ -52,21 +52,35 @@ public class CharacterController : MonoBehaviour
         // move character
         var biaisTransform = transformBias.transform;
         
-        Vector3 forward = biaisTransform.forward;
+        float Angle = ProjectAngle(_tangentSurface,Vector3.forward,transformBias.right);
+        Angle =  Angle;
+        
+        Debug.Log(Angle);
+        
+        Vector3 forward = (_tangentSurface + biaisTransform.forward).normalized;
+        
+        if (Angle < 0 && _direction.y > 0)
+        {
+           
+            forward = (_tangentSurface +( -biaisTransform.up)).normalized;
+        }
+        
         Vector3 right =  biaisTransform.right;
         
         
-        
+            
         // Movement
         
-       float Angle = ProjectAngle(_tangentSurface,Vector3.forward,transformBias.right);
-       Angle = 180 - Angle;
-       Debug.Log(Angle);
+       
        
         rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Acceleration);
         rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Acceleration);
-
-        rigidBody.velocity += (biaisTransform.forward*Angle) * _direction.y * Time.deltaTime;
+        //rigidBody.AddForce(-_normalSurface*gravityScale,ForceMode.Acceleration);
+    
+            
+       
+           
+        
         
         // Gravity accentiation
         rigidBody.AddForce(-Vector3.up,ForceMode.Acceleration);
@@ -103,7 +117,7 @@ public class CharacterController : MonoBehaviour
         if (!_jump || !_isGrounded) return;
 
         
-        rigidBody.AddForce(rigidBody.transform.up*jumpForce,ForceMode.Acceleration);
+        rigidBody.AddForce(rigidBody.transform.up*jumpForce,ForceMode.Impulse);
     }
     
     void IsGrounded()
@@ -112,6 +126,11 @@ public class CharacterController : MonoBehaviour
 
         Vector3 postiion = rigidBody.transform.position + Vector3.up*0.35f;
 
+        _isGrounded = false;
+        _normalSurface = transformBias.up;
+        _tangentSurface = transformBias.forward;
+
+        if (_jump) return;
         if (Physics.SphereCast(postiion, 0.8f, -rigidBody.transform.up, out hit, 1f))
         {
             _normalSurface = hit.normal;
@@ -122,8 +141,9 @@ public class CharacterController : MonoBehaviour
             _tangentSurface = _tangentSurface.normalized;
 
         }
+        
 
-        _isGrounded = false;
+    
     }
 
     private void OnDrawGizmos()
