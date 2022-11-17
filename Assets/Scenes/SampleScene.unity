@@ -199,8 +199,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 246610158}
   serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 2
+  m_Mass: 50
+  m_Drag: 1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -225,9 +225,10 @@ MonoBehaviour:
   transformBias: {fileID: 377638500}
   acceleration: 60
   maxSpeed: 10
-  jumpForce: 7
+  jumpForce: 5
   airControl: 0
-  gravityScale: 3
+  maxSlopeAngle: 55
+  gravityScale: 1
 --- !u!114 &246610166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,6 +270,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 39a6e5a6-72cd-4da9-bde9-791625754d06
     m_ActionName: PlayerController/Forward[/Keyboard/w,/Keyboard/s]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 730e5e4b-a05c-462f-b713-ee8f5d524345
+    m_ActionName: PlayerController/Jump[/Keyboard/space]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: PlayerKeyboard
   m_DefaultActionMap: PlayerController

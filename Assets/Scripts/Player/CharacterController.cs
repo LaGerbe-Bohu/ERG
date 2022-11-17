@@ -21,8 +21,9 @@ public class CharacterController : MonoBehaviour
 
     [Space] 
     public bool airControl = false;
-    public float gravityScale;
-
+    public float maxSlopeAngle = 45f;
+    public float gravityScale; // pour éviter l'effet tramplin
+    
     // some private var
     private Vector2 _direction;
     private bool _jump;
@@ -51,39 +52,29 @@ public class CharacterController : MonoBehaviour
     {
         // move character
         var biaisTransform = transformBias.transform;
+        float angle = ProjectAngle(_tangentSurface,Vector3.forward,transformBias.right);
+        Vector3 forward = transformBias.forward;
         
-        float Angle = ProjectAngle(_tangentSurface,Vector3.forward,transformBias.right);
-        Angle =  Angle;
-        
-        Debug.Log(Angle);
-        
-        Vector3 forward = (_tangentSurface + biaisTransform.forward).normalized;
-        
-        if (Angle < 0 && _direction.y > 0)
+        if (angle <= maxSlopeAngle)
         {
-           
-            forward = (_tangentSurface +( -biaisTransform.up)).normalized;
+            forward = (_tangentSurface + biaisTransform.forward).normalized;
+            if (angle < 0 && _direction.y > 0)
+            {
+                forward = (_tangentSurface +( -biaisTransform.up)).normalized;
+            }
+            else if (angle > 0 && _direction.y < 0)
+            {
+                forward = _tangentSurface;
+            }
         }
         
         Vector3 right =  biaisTransform.right;
-        
-        
-            
+
         // Movement
-        
-       
-       
         rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Acceleration);
         rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Acceleration);
-        //rigidBody.AddForce(-_normalSurface*gravityScale,ForceMode.Acceleration);
-    
-            
-       
-           
         
-        
-        // Gravity accentiation
-        rigidBody.AddForce(-Vector3.up,ForceMode.Acceleration);
+        rigidBody.AddForce(-Vector3.up * (gravityScale),ForceMode.Acceleration);
 
 
         // Normalise speed
@@ -117,7 +108,7 @@ public class CharacterController : MonoBehaviour
         if (!_jump || !_isGrounded) return;
 
         
-        rigidBody.AddForce(rigidBody.transform.up*jumpForce,ForceMode.Impulse);
+        rigidBody.AddForce(rigidBody.transform.up*jumpForce,ForceMode.VelocityChange);
     }
     
     void IsGrounded()
