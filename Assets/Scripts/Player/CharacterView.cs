@@ -1,12 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterView : MonoBehaviour
 {
-  
-    
     // ref for the fps view : https://gist.github.com/KarlRamstedt/407d50725c7b6abeaf43aee802fdd88e
     
     [Header("Compenents")] 
@@ -19,7 +14,6 @@ public class CharacterView : MonoBehaviour
     
     
     // Some private values
-
     private Quaternion baseQuaternion; // this quaternion is for store the first rotation of cam
     private Vector2 rotation;
     
@@ -29,7 +23,6 @@ public class CharacterView : MonoBehaviour
     void Start()
     {
         // lock the mouse
-        LockCursor();
         rotation = new Vector2(0,0);
         
         Cursor.lockState = CursorLockMode.Locked;
@@ -39,14 +32,9 @@ public class CharacterView : MonoBehaviour
     
     void Update()
     {
-     
         fpsView();
     }
 
-    void LockCursor()
-    {
-        
-    }
     
     void fpsView()
     {

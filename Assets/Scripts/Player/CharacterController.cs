@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 
 public class CharacterController : MonoBehaviour
@@ -16,6 +12,7 @@ public class CharacterController : MonoBehaviour
     
     [Header("Movement Values")]
     public float acceleration;
+    public float breakeValue;
     public float maxSpeed;
     public float jumpForce;
 
@@ -71,27 +68,49 @@ public class CharacterController : MonoBehaviour
         Vector3 right =  biaisTransform.right;
 
         // Movement
-        rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Acceleration);
-        rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Acceleration);
+
+
+        var rbVelocity = rigidBody.velocity;
+        rbVelocity += forward* (_direction.y * acceleration)*Time.fixedTime;
+        rbVelocity += right* (_direction.x * acceleration)*Time.fixedTime;
+        rigidBody.velocity = rbVelocity;
+
+
+        Vector3 localVelocity = transform.InverseTransformDirection(rbVelocity);
+
+      
+        if ( Mathf.Abs( localVelocity.z ) > 1 && _direction.y <= 0)
+        {
+          
+            Vector3 f = forward;
+            f.z = 0;
+            rbVelocity =  Vector3.Lerp(forward,  rigidBody.velocity,0.05f);
+
+            if (Mathf.Abs(localVelocity.z) <= 1)
+            {
+                Vector3 tmp = localVelocity;
+                tmp.z = 0;
+                rbVelocity = tmp;
+            }
+                
+        }
+     
+       
         
-        rigidBody.AddForce(-Vector3.up * (gravityScale),ForceMode.Acceleration);
+        //rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Acceleration);
+        //rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Acceleration);
+        //rigidBody.AddForce(-Vector3.up * (gravityScale),ForceMode.Acceleration);
 
 
         // Normalise speed
-        var velocity = rigidBody.velocity;
-        float tmpY = velocity.y;
+        float tmpY = rbVelocity.y;
         
         Vector3 tmpVelo;
-        tmpVelo = Vector3.ClampMagnitude(velocity, maxSpeed);
+        tmpVelo = Vector3.ClampMagnitude(rbVelocity, maxSpeed);
         tmpVelo = new Vector3(tmpVelo.x, tmpY, tmpVelo.z);
         rigidBody.velocity = tmpVelo;
 
-        
-        
-        
     }
-
-
 
     
     void OrientCharacter()
@@ -107,7 +126,6 @@ public class CharacterController : MonoBehaviour
     {
         if (!_jump || !_isGrounded) return;
 
-        
         rigidBody.AddForce(rigidBody.transform.up*jumpForce,ForceMode.VelocityChange);
     }
     
@@ -132,9 +150,7 @@ public class CharacterController : MonoBehaviour
             _tangentSurface = _tangentSurface.normalized;
 
         }
-        
 
-    
     }
 
     private void OnDrawGizmos()
@@ -155,15 +171,6 @@ public class CharacterController : MonoBehaviour
         Gizmos.DrawRay(position,_tangentSurface*10f);
         
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     // useful fonction
