@@ -71,28 +71,43 @@ public class CharacterController : MonoBehaviour
 
 
         var rbVelocity = rigidBody.velocity;
-        rbVelocity += forward* (_direction.y * acceleration)*Time.fixedTime;
-        rbVelocity += right* (_direction.x * acceleration)*Time.fixedTime;
+        rbVelocity += biaisTransform.forward* (_direction.y * acceleration)*Time.fixedTime;
+        rbVelocity += biaisTransform.right* (_direction.x * acceleration)*Time.fixedTime;
         rigidBody.velocity = rbVelocity;
 
 
         Vector3 localVelocity = transformBias.InverseTransformDirection(rbVelocity);
        
-        
-        if ( localVelocity.z > 0 && _direction.y <= 0)
+        // forward break        
+        if ( Mathf.Abs( localVelocity.z) > 0 && _direction.y <= 0)
         {
             localVelocity.z = 0;
-
-            rbVelocity = Vector3.Lerp(rbVelocity,localVelocity,Time.fixedDeltaTime * (1f/2f));
+            rbVelocity = Vector3.Lerp(rbVelocity,localVelocity,Time.fixedDeltaTime/breakeValue);
             localVelocity = transformBias.InverseTransformDirection(rbVelocity);
            
-            if (localVelocity.z <= 0.1f )
+            if ( Mathf.Abs( localVelocity.z) <= 0.5f )
             {
                 localVelocity.z = 0;
                 rbVelocity = transformBias.TransformDirection(localVelocity);
             }
-
+            
         }
+        
+        // right break
+        if ( Mathf.Abs( localVelocity.x) > 0 && _direction.x <= 0)
+        {
+            localVelocity.x = 0;
+            rbVelocity = Vector3.Lerp(rbVelocity,localVelocity,Time.fixedDeltaTime/breakeValue);
+            localVelocity = transformBias.InverseTransformDirection(rbVelocity);
+           
+            if ( Mathf.Abs( localVelocity.x) <= 0.5f )
+            {
+                localVelocity.x = 0;
+                rbVelocity = transformBias.TransformDirection(localVelocity);
+            }
+            
+        }
+        
 
 
         // Normalise speed

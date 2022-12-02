@@ -224,7 +224,7 @@ MonoBehaviour:
   playerInput: {fileID: 246610166}
   transformBias: {fileID: 377638500}
   acceleration: 60
-  breakeValue: 50
+  breakeValue: 0.1
   maxSpeed: 10
   jumpForce: 5
   airControl: 0
