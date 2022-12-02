@@ -76,30 +76,23 @@ public class CharacterController : MonoBehaviour
         rigidBody.velocity = rbVelocity;
 
 
-        Vector3 localVelocity = transform.InverseTransformDirection(rbVelocity);
-
-      
-        if ( Mathf.Abs( localVelocity.z ) > 1 && _direction.y <= 0)
-        {
-          
-            Vector3 f = forward;
-            f.z = 0;
-            rbVelocity =  Vector3.Lerp(forward,  rigidBody.velocity,0.05f);
-
-            if (Mathf.Abs(localVelocity.z) <= 1)
-            {
-                Vector3 tmp = localVelocity;
-                tmp.z = 0;
-                rbVelocity = tmp;
-            }
-                
-        }
-     
+        Vector3 localVelocity = transformBias.InverseTransformDirection(rbVelocity);
        
         
-        //rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Acceleration);
-        //rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Acceleration);
-        //rigidBody.AddForce(-Vector3.up * (gravityScale),ForceMode.Acceleration);
+        if ( localVelocity.z > 0 && _direction.y <= 0)
+        {
+            localVelocity.z = 0;
+
+            rbVelocity = Vector3.Lerp(rbVelocity,localVelocity,Time.fixedDeltaTime * (1f/2f));
+            localVelocity = transformBias.InverseTransformDirection(rbVelocity);
+           
+            if (localVelocity.z <= 0.1f )
+            {
+                localVelocity.z = 0;
+                rbVelocity = transformBias.TransformDirection(localVelocity);
+            }
+
+        }
 
 
         // Normalise speed
