@@ -75,7 +75,9 @@ public class CharacterController : MonoBehaviour
         rbVelocity += biaisTransform.right* (_direction.x * acceleration)*Time.fixedTime;
         rigidBody.velocity = rbVelocity;
 
-
+        rigidBody.AddForce(Vector3.up*gravityScale,ForceMode.Acceleration);
+        
+        
         Vector3 localVelocity = transformBias.InverseTransformDirection(rbVelocity);
        
         // forward break        
@@ -87,8 +89,9 @@ public class CharacterController : MonoBehaviour
            
             if ( Mathf.Abs( localVelocity.z) <= 0.5f )
             {
-                localVelocity.z = 0;
-                rbVelocity = transformBias.TransformDirection(localVelocity);
+                Vector3 tmp = localVelocity;
+                tmp.z = 0;
+                rbVelocity = transformBias.TransformDirection(tmp);
             }
             
         }
@@ -102,8 +105,9 @@ public class CharacterController : MonoBehaviour
            
             if ( Mathf.Abs( localVelocity.x) <= 0.5f )
             {
-                localVelocity.x = 0;
-                rbVelocity = transformBias.TransformDirection(localVelocity);
+               Vector3 tmp = localVelocity;
+               tmp.x = 0;
+                rbVelocity = transformBias.TransformDirection(tmp);
             }
             
         }

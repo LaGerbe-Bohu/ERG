@@ -229,7 +229,7 @@ MonoBehaviour:
   jumpForce: 5
   airControl: 0
   maxSlopeAngle: 55
-  gravityScale: 1
+  gravityScale: 0.05
 --- !u!114 &246610166
 MonoBehaviour:
   m_ObjectHideFlags: 0
