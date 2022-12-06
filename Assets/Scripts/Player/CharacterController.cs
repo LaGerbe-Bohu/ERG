@@ -71,11 +71,18 @@ public class CharacterController : MonoBehaviour
         Vector3 right =  biaisTransform.right;
 
         // Movement
-        rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Acceleration);
-        rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Acceleration);
+       // 
+        //
         
-        rigidBody.AddForce(-Vector3.up * (gravityScale),ForceMode.Acceleration);
+        //rigidBody.AddForce(-Vector3.up * (gravityScale),ForceMode.Acceleration);
 
+
+        if (_direction.magnitude > float.Epsilon)
+        {
+            rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Impulse); 
+            rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Impulse);
+        }
+        
 
         // Normalise speed
         var velocity = rigidBody.velocity;
