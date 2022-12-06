@@ -50,6 +50,9 @@ public class CharacterController : MonoBehaviour
     
     void MoveCharacter()
     {
+
+        if (!airControl && !_isGrounded) return;
+        
         // move character
         var biaisTransform = transformBias.transform;
         float angle = ProjectAngle(_tangentSurface,Vector3.forward,transformBias.right);
@@ -70,20 +73,14 @@ public class CharacterController : MonoBehaviour
         
         Vector3 right =  biaisTransform.right;
 
-        // Movement
-       // 
-        //
         
-        //rigidBody.AddForce(-Vector3.up * (gravityScale),ForceMode.Acceleration);
-
-
+        // Movement
         if (_direction.magnitude > float.Epsilon)
         {
-            rigidBody.AddForce(forward * (_direction.y * acceleration),ForceMode.Impulse); 
-            rigidBody.AddForce(right * (_direction.x * acceleration),ForceMode.Impulse);
+            Vector3 move = (forward * (_direction.y ) + right * (_direction.x )).normalized * acceleration;
+            rigidBody.AddForce(move,ForceMode.Impulse); 
         }
         
-
         // Normalise speed
         var velocity = rigidBody.velocity;
         float tmpY = velocity.y;
@@ -92,9 +89,6 @@ public class CharacterController : MonoBehaviour
         tmpVelo = Vector3.ClampMagnitude(velocity, maxSpeed);
         tmpVelo = new Vector3(tmpVelo.x, tmpY, tmpVelo.z);
         rigidBody.velocity = tmpVelo;
-
-        
-        
         
     }
 
@@ -134,14 +128,12 @@ public class CharacterController : MonoBehaviour
             _normalSurface = hit.normal;
             _tangentSurface = Vector3.Cross( transformBias.transform.right,hit.normal);
             _isGrounded =  true;
-
+            
             _normalSurface = _normalSurface.normalized;
             _tangentSurface = _tangentSurface.normalized;
 
         }
         
-
-    
     }
 
     private void OnDrawGizmos()
